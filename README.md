@@ -3,23 +3,37 @@
 [![testes](https://github.com/LuizMartinez6/homelab-jogos-retro/actions/workflows/testes.yml/badge.svg)](https://github.com/LuizMartinez6/homelab-jogos-retro/actions/workflows/testes.yml)
 [![seguranca](https://github.com/LuizMartinez6/homelab-jogos-retro/actions/workflows/seguranca.yml/badge.svg)](https://github.com/LuizMartinez6/homelab-jogos-retro/actions/workflows/seguranca.yml)
 
-Um instalador de um clique que monta Playnite e emuladores num PC com Windows, ligado a um servidor caseiro, com **atualização automática assinada**, **saves sincronizados** e **mais de 400 testes automatizados**. Ele roda no PC de pessoas que não são técnicas, então o foco é não quebrar e, quando quebrar, voltar sozinho.
+**Uma central de videogames antigos para casa: um clique para instalar, os jogos num lugar só e o progresso salvo em todo aparelho.**
 
 > **In English:** a one-click Windows installer (PowerShell 5.1 + WPF) and a Playnite plugin (C#) backed by a self-hosted Docker server. Highlights: RSA-signed auto-updates with atomic swap and rollback, resumable downloads, 400+ automated tests (Pester and pytest) that run the real scripts against a fake HTTP server, contract tests between components, and a CI pipeline with secret scanning, CodeQL and workflow linting. Code and docs are in Portuguese.
 
-## 🧪 Como o projeto é testado e protegido
+## 🤔 O que é isso?
 
-- **Testes que rodam o código de verdade.** Os workers e o launcher rodam em processos separados, como o plugin os chama, contra um servidor HTTP de teste que simula login, `Range`, queda no meio do download e erros de status. Programas externos (Playnite, `scp`, `ssh`) viram um `.exe` falso que só registra a chamada. Detalhes em [`testes/`](testes) e no [`CLAUDE.md`](CLAUDE.md).
-- **Testes de contrato** entre partes que não se enxergam: painel ↔ instalador (código de convite), painel ↔ nginx (hash da senha), gerador de catálogo ↔ plugin C#, publicador ↔ atualizador (pacote assinado de ponta a ponta) e plugin ↔ workers.
-- **Atualização segura.** O cliente só aceita pacote com assinatura RSA-SHA256 válida, confere que todo script abre no PowerShell 5.1 antes de trocar, troca a pasta de forma atômica e volta para a versão anterior se algo falhar. Há um canal de teste antes de liberar para todos.
-- **Pipeline no GitHub Actions:** PSScriptAnalyzer, ruff (com as regras de segurança do Bandit), Pester no Windows, pytest e nginx em container no Linux, gitleaks no histórico inteiro, CodeQL, zizmor nos workflows e Dependabot. Veja [`docs/seguranca.md`](docs/seguranca.md).
-- **Processo com critérios de aceite.** Cada mudança passa por regra de negócio escrita, revisão de segurança e QA antes de chegar aos usuários. As regras vigentes, o processo do time e os incidentes estão em [`docs/regras-de-negocio.md`](docs/regras-de-negocio.md).
+Sabe quando você quer jogar um jogo antigo e precisa caçar programa, configurar controle, descobrir onde fica o save... e no PC de outra pessoa começa tudo de novo? Este projeto resolve isso.
 
-## 🕹️ O que ele faz
+Funciona como uma **"Netflix caseira" de jogos antigos**:
 
-Os jogos ficam num servidor em casa ([RomM](https://github.com/rommapp/romm)), o PC e o celular jogam com o save sincronizado, e os amigos instalam tudo com o mesmo instalador e acessam a biblioteca do servidor com login próprio. Também cuida de multiplayer, conquistas do RetroAchievements e jogos de PC sem DRM (GOG).
+- 🏠 **Os jogos ficam num computador em casa** (o servidor), organizados com capa e nome, como numa loja.
+- 🖱️ **Um instalador de um clique** prepara qualquer PC com Windows: instala os emuladores (os programas que rodam jogos de console no computador), a biblioteca e os controles. A pessoa não precisa saber nada de tecnologia.
+- 💾 **O progresso acompanha você.** Começou no PC e quer continuar no celular? O save vai junto, sozinho.
+- 👥 **Os amigos entram por convite.** Cada um recebe um código, cola no instalador e pronto. Dá para tirar o acesso de qualquer um a qualquer hora.
+- 🏆 **Extras:** jogar online com os amigos, conquistas (troféus) e um ranking da turma.
 
-> Este repositório vem do meu setup real, publicado sem senhas, chaves e endereços. Os scripts estão em português porque foram escritos para mim e para os meus amigos. Mesmo assim, a ideia vale para qualquer pessoa que queira montar algo parecido, e este README explica cada peça e por que ela existe.
+## ⚙️ Como funciona, em 4 passos
+
+1. **O dono** monta o servidor em casa e coloca lá os próprios jogos.
+2. **O dono** gera um convite no painel e manda para o amigo junto com o instalador.
+3. **O amigo** abre o instalador, cola o convite e clica em instalar. Em poucos minutos o PC está pronto.
+4. **Daí em diante tudo é automático:** o programa se atualiza sozinho, os saves sincronizam, e se algo der errado ele volta para a versão que funcionava.
+
+## ✅ Por que dá para confiar
+
+Este programa roda no PC de pessoas que não são técnicas. Então o principal objetivo é **não quebrar** e, se quebrar, **se consertar sozinho**.
+
+- **Mais de 400 testes automáticos** conferem o programa a cada mudança, simulando internet caindo no meio do download, servidor fora do ar e respostas erradas.
+- **Atualização com "lacre":** cada versão nova é assinada digitalmente. Se alguém tentar mandar uma atualização falsa, o PC do amigo recusa.
+- **Nenhuma porta aberta para a internet:** o acesso de fora de casa é só por uma rede privada (VPN) e só para quem foi convidado.
+- **Senhas e chaves nunca entram no código**, e uma verificação automática barra qualquer segredo que tente entrar.
 
 ---
 
@@ -33,6 +47,20 @@ Este projeto **não contém nem baixa jogos, BIOS, firmwares de console ou chave
 - Antes de compartilhar qualquer coisa com outras pessoas, verifique o que a lei do seu país e as licenças dos jogos permitem.
 
 ---
+
+# 🔧 Detalhes técnicos
+
+Daqui para baixo é para quem quer entender as peças ou montar o próprio.
+
+## 🧪 Como o projeto é testado e protegido
+
+- **Testes que rodam o código de verdade.** Os workers e o launcher rodam em processos separados, como o plugin os chama, contra um servidor HTTP de teste que simula login, `Range`, queda no meio do download e erros de status. Programas externos (Playnite, `scp`, `ssh`) viram um `.exe` falso que só registra a chamada. Detalhes em [`testes/`](testes) e no [`CLAUDE.md`](CLAUDE.md).
+- **Testes de contrato** entre partes que não se enxergam: painel ↔ instalador (código de convite), painel ↔ nginx (hash da senha), gerador de catálogo ↔ plugin C#, publicador ↔ atualizador (pacote assinado de ponta a ponta) e plugin ↔ workers.
+- **Atualização segura.** O cliente só aceita pacote com assinatura RSA-SHA256 válida, confere que todo script abre no PowerShell 5.1 antes de trocar, troca a pasta de forma atômica e volta para a versão anterior se algo falhar. Há um canal de teste antes de liberar para todos.
+- **Pipeline no GitHub Actions:** PSScriptAnalyzer, ruff (com as regras de segurança do Bandit), Pester no Windows, pytest e nginx em container no Linux, gitleaks no histórico inteiro, CodeQL, zizmor nos workflows e Dependabot. Veja [`docs/seguranca.md`](docs/seguranca.md).
+- **Processo com critérios de aceite.** Cada mudança passa por regra de negócio escrita, revisão de segurança e QA antes de chegar aos usuários. As regras vigentes, o processo do time e os incidentes estão em [`docs/regras-de-negocio.md`](docs/regras-de-negocio.md).
+
+> Este repositório vem do meu setup real, publicado sem senhas, chaves e endereços. Os scripts estão em português porque foram escritos para mim e para os meus amigos. Mesmo assim, a ideia vale para qualquer pessoa que queira montar algo parecido, e as seções abaixo explicam cada peça e por que ela existe.
 
 ## 🧭 Visão geral
 
