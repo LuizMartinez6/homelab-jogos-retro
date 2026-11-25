@@ -1,0 +1,21 @@
+# Monitor dos servidores de jogo do painel Amigos (veja monitor.py).
+# Rede do host para enxergar as portas em /proc/net; o socket do Docker so serve para
+# ler o estado/logs dos containers da lista e reinicia-los quando o painel pede.
+name: monitor
+services:
+  monitor:
+    image: python:3.12-alpine
+    container_name: monitor-jogos
+    restart: unless-stopped
+    network_mode: host
+    working_dir: /app
+    command: ["python", "-u", "/app/monitor.py"]
+    environment:
+      - PAINEL_UID=999
+      - PAINEL_GID=1000
+    volumes:
+      - /DATA/AppData/monitor:/app:ro
+      - /DATA/AppData/amigos/dados:/dados
+      - /DATA/AppData/game-servers/retroarch-tunnel:/relay:ro
+      - /DATA/AppData/jogos-pc/instalador:/instalador:ro
+      - /var/run/docker.sock:/var/run/docker.sock

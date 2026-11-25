@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amigos</title>
+<link rel="icon" href="/icone.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0f0f11" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f5f6" media="(prefers-color-scheme: light)">
+<style>
+:root {
+  --bg: #f5f5f6; --surface: #ffffff; --surface-2: #f0f0f2; --border: #e3e3e7; --text: #18181b; --muted: #71717a;
+  --primary: #18181b; --on-primary: #ffffff; --green: #16a34a; --red: #dc2626; --red-bg: #fef2f2; --focus: #a1a1aa;
+  --wa: #1fa855;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0f11; --surface: #17171a; --surface-2: #202024; --border: #27272b; --text: #ededef; --muted: #8b8b93;
+    --primary: #ededef; --on-primary: #111113; --green: #3ecf8e; --red: #f87171; --red-bg: #2a1416; --focus: #52525b;
+    --wa: #25d366;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 15px/1.45 "Inter", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; color: inherit; }
+.hidden { display: none !important; }
+.wrap { max-width: 880px; margin: 0 auto; padding: 32px 16px 64px; }
+
+/* botoes */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); cursor: pointer; font-weight: 500; font-size: 14px; text-decoration: none; white-space: nowrap;
+  transition: background .12s, border-color .12s, opacity .12s;
+}
+.btn:hover { background: var(--surface-2); }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn:focus-visible, input:focus-visible, .seg button:focus-visible, .row:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.btn.primary:hover { opacity: .88; }
+.btn.wa { background: var(--wa); border-color: var(--wa); color: #06210f; }
+.btn.wa:hover { opacity: .9; }
+.btn.danger { color: var(--red); }
+.btn.danger.solid { background: var(--red); border-color: var(--red); color: #fff; }
+.btn.icon { width: 38px; padding: 0; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+
+input[type=text], input[type=password] {
+  height: 40px; width: 100%; padding: 0 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); outline: none;
+}
+input::placeholder { color: var(--muted); }
+
+/* entrar */
+.login { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+.login form { width: 100%; max-width: 340px; display: grid; gap: 12px; }
+.login .logo { width: 44px; height: 44px; margin-bottom: 8px; }
+.login h1 { margin: 0; font-size: 22px; letter-spacing: -.01em; }
+.login p { margin: 0 0 8px; color: var(--muted); }
+.erro { color: var(--red); font-size: 14px; min-height: 20px; }
+
+/* cabecalho */
+header { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+header h1 { margin: 0; font-size: 26px; letter-spacing: -.02em; }
+header .sub { color: var(--muted); font-size: 14px; }
+header .acoes { margin-left: auto; display: flex; gap: 8px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.secao { padding: 20px; margin-bottom: 16px; }
+.secao h2 { margin: 0 0 14px; font-size: 15px; font-weight: 600; }
+
+/* convidar */
+.convidar { display: flex; gap: 10px; flex-wrap: wrap; }
+.convidar input { flex: 1 1 200px; }
+.seg { display: inline-flex; padding: 3px; border-radius: 9px; background: var(--surface-2); border: 1px solid var(--border); height: 40px; }
+.seg button { border: 0; background: none; padding: 0 12px; border-radius: 6px; cursor: pointer; color: var(--muted); font-size: 14px; font-weight: 500; }
+.seg button[aria-pressed=true] { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.dica { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+
+/* convite gerado */
+.convite .topo { display: flex; align-items: start; gap: 12px; }
+.convite .topo div { flex: 1; }
+.convite p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+.codigo {
+  margin: 14px 0; padding: 12px 14px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);
+  font: 13px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; word-break: break-all; user-select: all;
+}
+.botoes { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* lista */
+.lista-topo { display: flex; align-items: baseline; justify-content: space-between; padding: 18px 20px 6px; }
+.lista-topo h2 { margin: 0; font-size: 15px; font-weight: 600; }
+.lista-topo span { color: var(--muted); font-size: 13px; }
+.row {
+  display: grid; grid-template-columns: 36px 1fr auto auto; gap: 14px; align-items: center;
+  padding: 12px 20px; border-top: 1px solid var(--border);
+}
+.row:first-of-type { border-top: 0; }
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--surface-2); border: 1px solid var(--border); font-weight: 600; font-size: 14px; color: var(--muted);
+}
+.nome { font-weight: 600; }
+.pcs { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip { font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+.status { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--muted); min-width: 170px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex: none; }
+.dot.on { background: var(--green); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 20%, transparent); }
+.dot.wait { background: #d4a72c; }
+.row .mais { grid-column: 1 / -1; display: flex; gap: 8px; padding-left: 50px; }
+.vazio { padding: 28px 20px; color: var(--muted); text-align: center; }
+.skel { height: 14px; border-radius: 4px; background: var(--surface-2); }
+
+/* jogos de PC */
+.jogos-topo { display: flex; align-items: start; gap: 12px; margin-bottom: 14px; }
+.jogos-topo div { flex: 1; min-width: 0; }
+.jogos-topo h2 { margin: 0; }
+.jogos-topo .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.andamento { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 14px; border-radius: 8px;
+  background: var(--surface-2); border: 1px solid var(--border); font-size: 14px; overflow-wrap: anywhere; }
+.andamento.erro-j { color: var(--red); background: var(--red-bg); }
+.spin { width: 14px; height: 14px; flex: none; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--text); animation: gira .8s linear infinite; }
+@keyframes gira { to { transform: rotate(360deg); } }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip.novo { color: var(--green); border-color: var(--green); }
+
+/* abas */
+.abas { display: flex; gap: 4px; margin: -8px 0 20px; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+.abas button {
+  display: inline-flex; align-items: center; gap: 7px; border: 0; background: none; cursor: pointer; white-space: nowrap;
+  padding: 10px 12px; margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--muted); font-weight: 500; font-size: 14px;
+}
+.abas button:hover { color: var(--text); }
+.abas button[aria-selected=true] { color: var(--text); border-bottom-color: var(--text); }
+.abas button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 6px; }
+.contador { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); }
+.contador.alerta { background: var(--red); border-color: var(--red); color: #fff; }
+.contador.ativo { background: var(--green); border-color: var(--green); color: #fff; }
+.contador.aviso { background: #d4a72c; border-color: #d4a72c; color: #1c1400; }
+.versao { font: 600 12px/1 ui-monospace, "Cascadia Mono", Consolas, monospace; padding: 4px 8px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--border); }
+.versao.ok { color: var(--green); border-color: var(--green); }
+.versao.velha { color: #d4a72c; border-color: #d4a72c; }
+
+/* servidores de jogo e downloads */
+.dot.off { background: var(--red); }
+.srv, .dl { display: grid; gap: 4px 14px; align-items: center; padding: 12px 20px; border-top: 1px solid var(--border); }
+.srv { grid-template-columns: 1fr auto; }
+.srv .det, .dl .det { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.srv .linha { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.dl { grid-template-columns: 36px 1fr auto; }
+.barra { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; margin-top: 6px; }
+.barra div { height: 100%; background: var(--green); transition: width .4s; }
+.dl.erro-d .det { color: var(--red); }
+.dl.parado-d .barra div { background: var(--border); }
+.hist { width: 100%; border-collapse: collapse; font-size: 13px; }
+.hist td { padding: 8px 20px; border-top: 1px solid var(--border); }
+.hist td:last-child { color: var(--muted); text-align: right; white-space: nowrap; }
+.ok-t { color: var(--green); } .erro-t { color: var(--red); } .cancel-t { color: var(--muted); }
+
+/* modal e aviso */
+dialog { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); color: var(--text); padding: 22px; width: min(400px, calc(100vw - 32px)); }
+dialog::backdrop { background: rgba(0,0,0,.45); }
+dialog h3 { margin: 0 0 8px; font-size: 17px; }
+dialog p { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+dialog .botoes { justify-content: flex-end; }
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+  background: var(--primary); color: var(--on-primary); padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 500;
+  transition: opacity .18s, transform .18s; max-width: calc(100vw - 32px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.err { background: var(--red); color: #fff; }
+
+@media (max-width: 640px) {
+  .wrap { padding-top: 20px; }
+  header h1 { font-size: 22px; }
+  .row { grid-template-columns: 36px 1fr auto; row-gap: 6px; }
+  .row .status { grid-column: 2 / -1; min-width: 0; }
+  .row .mais { padding-left: 0; }
+  .row .mais .btn { flex: 1; }
+  .convidar .seg, .convidar .btn { flex: 1 1 auto; }
+  .seg button { flex: 1; }
+  .botoes .btn { flex: 1 1 calc(50% - 8px); }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></symbol>
+  <symbol id="i-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.8-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></symbol>
+</svg>
+
+<!-- Entrar -->
+<section id="telaEntrar" class="login hidden">
+  <form id="formEntrar">
+    <img class="logo" src="/icone.svg" alt="">
+    <h1>Amigos do servidor</h1>
+    <p>Digite a senha do painel.</p>
+    <input id="senha" type="password" placeholder="Senha" autocomplete="current-password" required>
+    <button class="btn primary" type="submit">Entrar</button>
+    <div class="erro" id="erroEntrar"></div>
+  </form>
+</section>
+
+<!-- Painel -->
+<main id="telaPainel" class="wrap hidden">
+  <header>
+    <div>
+      <h1>Amigos</h1>
+      <div class="sub" id="resumo">Carregando…</div>
+    </div>
+    <div class="acoes">
+      <button class="btn icon" id="btnAtualizar" title="Atualizar lista" aria-label="Atualizar lista"><svg><use href="#i-refresh"/></svg></button>
+      <button class="btn icon" id="btnSair" title="Sair" aria-label="Sair"><svg><use href="#i-exit"/></svg></button>
+    </div>
+  </header>
+
+  <nav class="abas" role="tablist" aria-label="Seções do painel">
+    <button role="tab" data-aba="amigos" aria-selected="true">Amigos</button>
+    <button role="tab" data-aba="servidores" aria-selected="false">Servidores <span class="contador hidden" id="contServidores"></span></button>
+    <button role="tab" data-aba="downloads" aria-selected="false">Downloads <span class="contador hidden" id="contDownloads"></span></button>
+    <button role="tab" data-aba="atualizacoes" aria-selected="false">Atualizações <span class="contador hidden" id="contAtualizacoes"></span></button>
+    <button role="tab" data-aba="erros" aria-selected="false">Erros <span class="contador hidden" id="contErros"></span></button>
+    <button role="tab" data-aba="recomps" aria-selected="false">Recomps <span class="contador hidden" id="contRecomps"></span></button>
+    <button role="tab" data-aba="jogos" aria-selected="false">Jogos de PC</button>
+  </nav>
+
+  <div data-painel="amigos">
+  <section class="card secao">
+    <h2>Convidar alguém</h2>
+    <form class="convidar" id="formConvidar">
+      <input id="novoNome" type="text" placeholder="Nome, sem espaço" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+      <div class="seg" role="group" aria-label="Rede">
+        <button type="button" data-rede="netbird" aria-pressed="true">NetBird</button>
+        <button type="button" data-rede="tailscale" aria-pressed="false">Tailscale</button>
+      </div>
+      <button class="btn primary" type="submit" id="btnConvidar">Gerar convite</button>
+    </form>
+    <p class="dica" id="dicaRede">Para gente nova. O código vale 7 dias e uma instalação.</p>
+  </section>
+
+  <section class="card secao convite hidden" id="painelConvite">
+    <div class="topo">
+      <div>
+        <h2 id="conviteTitulo" style="margin:0"></h2>
+        <p id="conviteInfo"></p>
+      </div>
+      <button class="btn icon" id="btnFecharConvite" title="Fechar" aria-label="Fechar"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="codigo" id="conviteCodigo"></div>
+    <div class="botoes">
+      <a class="btn wa" id="btnWhats" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>Enviar pelo WhatsApp</a>
+      <button class="btn" id="btnCopiarMsg"><svg><use href="#i-copy"/></svg>Copiar mensagem</button>
+      <button class="btn" id="btnCopiarCodigo"><svg><use href="#i-copy"/></svg>Copiar código</button>
+      <a class="btn" id="btnBaixar"><svg><use href="#i-down"/></svg>Baixar instalador</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="lista-topo"><h2>Quem tem acesso</h2><span id="contagem"></span></div>
+    <div id="lista">
+      <div class="row"><div class="avatar"></div><div class="skel" style="width:40%"></div><div></div><div></div></div>
+      <div class="row"><div class="avatar"></div><div class="skel" style="width:55%"></div><div></div><div></div></div>
+      <div class="row"><div class="avatar"></div><div class="skel" style="width:35%"></div><div></div><div></div></div>
+    </div>
+  </section>
+  </div>
+
+  <div data-painel="servidores" class="hidden">
+  <section class="card">
+    <div class="lista-topo"><h2>Servidores de jogo</h2><span id="srvInfo">Carregando…</span></div>
+    <div id="srvLista"></div>
+  </section>
+  </div>
+
+  <div data-painel="downloads" class="hidden">
+  <section class="card">
+    <div class="lista-topo"><h2>Baixando agora</h2><span id="dlInfo"></span></div>
+    <div id="dlLista"><div class="vazio">Carregando…</div></div>
+  </section>
+  <section class="card" style="margin-top:16px">
+    <div class="lista-topo"><h2>Últimos downloads</h2></div>
+    <table class="hist"><tbody id="dlHist"></tbody></table>
+  </section>
+  </div>
+
+  <div data-painel="atualizacoes" class="hidden">
+  <section class="card">
+    <div class="lista-topo"><h2>Programa dos amigos</h2><span id="atInfo">Carregando…</span></div>
+    <div id="atLista"></div>
+    <p class="dica" style="padding:0 20px 16px">O programa se atualiza quando o amigo abre o atalho "Jogos Retro" (na abertura seguinte, as novidades já valem). Quem nunca abriu aparece como "ainda não instalou".</p>
+  </section>
+  </div>
+
+  <div data-painel="erros" class="hidden">
+  <section class="card">
+    <div class="lista-topo"><h2>Erros no PC dos amigos</h2><button class="btn hidden" id="btnLimparErros">Limpar tudo</button></div>
+    <div id="erLista"><div class="vazio">Carregando…</div></div>
+    <p class="dica" style="padding:0 20px 16px">Falhas do programa ao abrir (atualização, multiplayer, gpSP, correções por jogo). A mesma falha de novo só aumenta a contagem. Erros de download ficam na aba Downloads. Chega só de quem tem a versão 26 ou mais nova.</p>
+  </section>
+  </div>
+
+  <div data-painel="recomps" class="hidden">
+  <section class="card">
+    <div class="lista-topo"><h2>Recomps no catálogo</h2><span id="rcInfo">Carregando…</span></div>
+    <div id="rcLista"></div>
+    <p class="dica" style="padding:0 20px 16px">O servidor confere as releases no GitHub sozinho. Nada aqui muda o PC dos amigos. Para corrigir, cole o comando no Executar do Windows (Win+R).</p>
+  </section>
+  </div>
+
+  <div data-painel="jogos" class="hidden">
+  <section class="card secao">
+    <div class="jogos-topo">
+      <div><h2>Jogos de PC</h2><div class="sub" id="jogosInfo">Carregando…</div></div>
+      <button class="btn" id="btnVerificar"><svg><use href="#i-refresh"/></svg>Verificar agora</button>
+    </div>
+    <div class="andamento hidden" id="jogosAndamento"></div>
+    <div class="chips" id="jogosLista"></div>
+    <p class="dica">Copie a pasta com o setup_*.exe da GOG para Game no servidor e, quando a cópia terminar, aperte Verificar agora. O nome da pasta vira o nome do jogo.</p>
+  </section>
+  </div>
+</main>
+
+<dialog id="dlg">
+  <h3 id="dlgTitulo"></h3>
+  <p id="dlgTexto"></p>
+  <div class="botoes">
+    <button class="btn" value="nao" id="dlgNao">Cancelar</button>
+    <button class="btn danger solid" id="dlgSim">Revogar</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const REDES = { netbird: 'NetBird', tailscale: 'Tailscale', lan: 'Rede de casa' };
+let rede = 'netbird', instaladores = [], ultimo = null, aberto = null, toastTimer;
+
+async function api(caminho, corpo) {
+  const op = corpo === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) };
+  const r = await fetch(caminho, op);
+  const dados = await r.json().catch(() => ({}));
+  if (r.status === 401 && caminho !== '/api/entrar') { mostrarEntrar(); throw new Error('Entre de novo.'); }
+  if (!r.ok) throw new Error(dados.erro || 'Erro ' + r.status);
+  return dados;
+}
+
+function toast(texto, erro) {
+  const t = $('#toast');
+  t.textContent = texto; t.classList.toggle('err', !!erro); t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), erro ? 5000 : 2200);
+}
+
+function copiar(texto) {
+  // navigator.clipboard so funciona em https; no http da rede de casa usa o jeito antigo.
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(texto).then(() => true, () => false);
+  const t = document.createElement('textarea');
+  t.value = texto; t.style.position = 'fixed'; t.style.opacity = '0';
+  document.body.appendChild(t); t.select();
+  let ok = false; try { ok = document.execCommand('copy'); } catch {}
+  t.remove(); return Promise.resolve(ok);
+}
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+function quando(iso) {
+  const d = new Date(iso), seg = (Date.now() - d) / 1000;
+  if (seg < 3600) return 'há ' + Math.max(1, Math.round(seg / 60)) + ' min';
+  if (seg < 86400) return 'há ' + Math.round(seg / 3600) + ' h';
+  if (seg < 7 * 86400) return 'há ' + Math.round(seg / 86400) + (seg < 2 * 86400 ? ' dia' : ' dias');
+  return 'em ' + d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+}
+
+function situacao(a) {
+  if (a.online) return ['on', 'Online agora'];
+  if (a.vistoEm) return ['', 'Visto ' + quando(a.vistoEm)];
+  if (a.conviteVence) return ['wait', 'Convite não usado · vence ' + new Date(a.conviteVence).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })];
+  if (a.rede === 'netbird') return ['', 'Nenhum PC conectado'];
+  if (a.rede === 'tailscale') return ['', 'Acompanhe pelo Tailscale'];
+  if (a.rede === 'lan') return ['', 'Joga na rede de casa'];
+  return ['', 'Sem informação'];
+}
+
+function desenhar(amigos) {
+  const on = amigos.filter(a => a.online).length;
+  $('#resumo').textContent = amigos.length + (amigos.length === 1 ? ' amigo' : ' amigos') + (on ? ' · ' + on + ' online agora' : '');
+  $('#contagem').textContent = amigos.length ? amigos.length + ' no total' : '';
+  if (!amigos.length) { $('#lista').innerHTML = '<div class="vazio">Ninguém ainda. Convide alguém acima.</div>'; return; }
+  $('#lista').innerHTML = amigos.map(a => {
+    const [cls, txt] = situacao(a);
+    const mais = aberto === a.nome ? `<div class="mais">
+        <button class="btn" data-acao="codigo" data-nome="${esc(a.nome)}">Gerar código de novo</button>
+        <button class="btn danger" data-acao="revogar" data-nome="${esc(a.nome)}">Revogar acesso</button></div>` : '';
+    return `<div class="row" tabindex="0" data-nome="${esc(a.nome)}" role="button" aria-expanded="${aberto === a.nome}">
+      <div class="avatar">${esc(a.nome[0].toUpperCase())}</div>
+      <div style="min-width:0"><div class="nome">${esc(a.nome)}</div>${a.pcs.length ? `<div class="pcs">${esc(a.pcs.join(', '))}</div>` : ''}</div>
+      <span class="chip">${esc(REDES[a.rede] || 'Sem rede')}</span>
+      <div class="status"><span class="dot ${cls}"></span>${esc(txt)}</div>
+      ${mais}</div>`;
+  }).join('');
+}
+
+let amigosAtuais = [];
+async function carregar() {
+  $('#btnAtualizar').disabled = true;
+  try {
+    const d = await api('/api/amigos');
+    amigosAtuais = d.amigos; instaladores = d.instaladores;
+    desenhar(amigosAtuais);
+  } catch (e) { toast(e.message, true); }
+  finally { $('#btnAtualizar').disabled = false; }
+}
+
+// ---------- jogos de PC ----------
+let jogosTimer, jogosOcupado = false;
+
+function ha(seg) {
+  if (seg < 60) return 'agora mesmo';
+  if (seg < 3600) return 'há ' + Math.round(seg / 60) + ' min';
+  if (seg < 86400) return 'há ' + Math.round(seg / 3600) + ' h';
+  return 'há ' + Math.round(seg / 86400) + (seg < 2 * 86400 ? ' dia' : ' dias');
+}
+
+function gb(b) { return b >= 1e9 ? (b / 1e9).toFixed(1).replace('.', ',') + ' GB' : Math.max(1, Math.round(b / 1e6)) + ' MB'; }
+
+function desenharJogos(e) {
+  const ocupado = e.pedido || e.situacao === 'verificando' || e.situacao === 'hash';
+  const and = $('#jogosAndamento');
+  and.classList.remove('erro-j');
+  if (ocupado) {
+    const txt = e.situacao === 'hash'
+      ? 'Calculando hash de ' + e.jogo + ': ' + e.arquivo + ' (' + gb(e.tamanhoArquivo) + '). Jogo grande demora alguns minutos.'
+      : 'Procurando jogos novos…';
+    and.innerHTML = '<span class="spin"></span><span>' + esc(txt) + '</span>';
+  } else if (e.situacao === 'erro') {
+    and.textContent = 'Deu erro na última verificação: ' + e.erro; and.classList.add('erro-j');
+  } else if (e.copiando && e.copiando.length) {
+    and.textContent = 'Ainda copiando (fica para a próxima): ' + e.copiando.join(', ');
+  }
+  and.classList.toggle('hidden', !ocupado && e.situacao !== 'erro' && !(e.copiando && e.copiando.length));
+
+  const jogos = e.jogos || [], novos = e.novos || [];
+  $('#jogosInfo').textContent = e.fim
+    ? jogos.length + (jogos.length === 1 ? ' jogo' : ' jogos') + ' para os amigos · verificado ' + ha(e.agora - e.fim)
+    : 'Ainda não verificado.';
+  $('#jogosLista').innerHTML = jogos.map(n => `<span class="chip${novos.includes(n) ? ' novo' : ''}">${esc(n)}</span>`).join('');
+  $('#btnVerificar').disabled = ocupado;
+
+  // Acabou de terminar uma verificacao que estava rodando: conta o resultado.
+  if (jogosOcupado && !ocupado && e.situacao === 'pronto')
+    toast(novos.length ? 'Entrou: ' + novos.join(', ') : 'Nenhum jogo novo');
+  jogosOcupado = ocupado;
+  clearTimeout(jogosTimer);
+  if (ocupado) jogosTimer = setTimeout(carregarJogos, 3000);
+}
+
+async function carregarJogos() {
+  try { desenharJogos(await api('/api/jogos')); }
+  catch (e) { $('#jogosInfo').textContent = e.message; }
+}
+
+$('#btnVerificar').onclick = async () => {
+  $('#btnVerificar').disabled = true;
+  try { jogosOcupado = true; desenharJogos(await api('/api/jogos/verificar', {})); }
+  catch (e) { toast(e.message, true); $('#btnVerificar').disabled = false; }
+};
+
+// ---------- servidores de jogo ----------
+function duracao(seg) {
+  if (seg < 3600) return Math.max(1, Math.round(seg / 60)) + ' min';
+  if (seg < 86400) return Math.round(seg / 3600) + ' h';
+  return Math.round(seg / 86400) + (seg < 2 * 86400 ? ' dia' : ' dias');
+}
+
+function contador(el, n, classe) {
+  el.textContent = n; el.className = 'contador ' + classe; el.classList.toggle('hidden', !n);
+}
+
+function desenharServidores(s) {
+  const problemas = (s.servidores || []).filter(v => !v.rodando || v.responde === false).length;
+  contador($('#contServidores'), problemas, 'alerta');
+  const velho = s.agora - s.atualizado > 90;
+  $('#srvInfo').textContent = velho ? 'Monitor sem notícia ' + ha(s.agora - s.atualizado) : 'Conferido ' + ha(s.agora - s.atualizado);
+  $('#srvLista').innerHTML = (s.servidores || []).map(v => {
+    const pedido = (s.pedidos || []).includes(v.nome);
+    const cor = !v.rodando ? 'off' : v.responde === false ? 'wait' : 'on';
+    const est = pedido ? 'Reiniciando…' : !v.rodando ? 'Parado' : v.responde === false ? 'Rodando, mas a porta não responde' : 'No ar há ' + duracao(s.agora - v.desde);
+    const quem = (v.jogadores || []).length ? (v.jogadores.length + (v.jogadores.length === 1 ? ' conectado: ' : ' conectados: ') + v.jogadores.join(', ')) : 'Ninguém conectado';
+    const det = [est, v.nome === 'ponte-vpn' ? null : quem, v.detalhe, v.reinicios ? v.reinicios + ' reinício(s) sozinho' : null].filter(Boolean).join(' · ');
+    return `<div class="srv"><div style="min-width:0"><div class="linha"><span class="dot ${cor}"></span>${esc(v.titulo)}</div><div class="det">${esc(det)}</div></div>
+      <button class="btn" data-srv="${esc(v.nome)}" data-titulo="${esc(v.titulo)}" ${pedido ? 'disabled' : ''}><svg><use href="#i-refresh"/></svg>Reiniciar</button></div>`;
+  }).join('') + ((s.eventos || []).length ? `<div class="dica" style="padding:0 20px 16px">Último aviso: ${esc(s.eventos[0].texto)} (${ha(s.agora - s.eventos[0].quando)})</div>` : '');
+  desenharRecomps(s);
+}
+
+async function carregarServidores() {
+  try { desenharServidores(await api('/api/servidores')); }
+  catch (e) {
+    $('#srvInfo').textContent = ''; $('#srvLista').innerHTML = `<div class="vazio">${esc(e.message)}</div>`;
+    $('#rcInfo').textContent = ''; $('#rcLista').innerHTML = `<div class="vazio">${esc(e.message)}</div>`;
+  }
+}
+
+// ---------- Recomps (releases no GitHub, conferidas pelo monitor; vêm junto com os servidores) ----------
+const RECOMP_ESTADOS = {
+  'ok': ['on', 'Em dia'],
+  'versao-nova': ['wait', 'Versão nova no GitHub'],
+  'regex-nenhum': ['off', 'Nenhum arquivo da release casa'],
+  'regex-varios': ['off', 'Mais de um arquivo da release casa'],
+  'sem-sha': ['off', 'GitHub sem SHA-256 do arquivo'],
+  'sem-release': ['off', 'Sem release no GitHub'],
+  'erro-github': ['off', 'Não deu para consultar o GitHub'],
+};
+
+// [texto da ação, comando para copiar] (os dois podem faltar).
+function acaoRecomp(x) {
+  const corrigir = 'corrija a regex de ' + x.id + ' no recomps.json';
+  if (x.estado === 'versao-nova') return ['Teste a versão nova: ' + corrigir, null];
+  if (x.estado === 'regex-nenhum' || x.estado === 'regex-varios') return [corrigir, null];
+  if (x.estado === 'sem-sha') return ['Os amigos não conseguem instalar. Espere uma release nova ou peça ao autor para publicar de novo.', null];
+  if (x.estado === 'sem-release') return ['Confira o projeto no GitHub (release apagada ou projeto movido).', null];
+  if (x.estado === 'erro-github') return ['Tenta de novo na próxima conferência.', null];
+  return [null, null];
+}
+
+function dataBr(v) {
+  const d = new Date(typeof v === 'number' ? v * 1000 : v);
+  return isNaN(d) ? '?' : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function desenharRecomps(s) {
+  const r = s.recomps || {};
+  const cor = x => (RECOMP_ESTADOS[x.estado] || ['off'])[0];
+  const peso = { off: 0, wait: 1, on: 2 };
+  const lista = (r.lista || []).slice().sort((a, b) => peso[cor(a)] - peso[cor(b)] || String(a.nome || a.id).localeCompare(String(b.nome || b.id), 'pt-BR'));
+  const vermelhos = lista.filter(x => cor(x) === 'off').length, amarelos = lista.filter(x => cor(x) === 'wait').length;
+  contador($('#contRecomps'), vermelhos + amarelos, vermelhos ? 'alerta' : 'aviso');
+  $('#rcInfo').textContent = r.conferido ? lista.length + (lista.length === 1 ? ' Recomp' : ' Recomps') + ' · conferido ' + ha(s.agora - r.conferido) : '';
+  $('#rcLista').innerHTML = (lista.length ? lista.map(x => {
+    const [c, rotulo] = RECOMP_ESTADOS[x.estado] || ['off', x.estado];
+    const ref = x.versao_ref ? 'Referência ' + x.versao_ref + (x.vista_em ? ' (vista em ' + dataBr(x.vista_em) + ')' : '') : 'Referência: ainda não vista';
+    const ult = x.ultima ? 'Última ' + x.ultima.tag + ' (' + dataBr(x.ultima.data) + (x.ultima.prerelease ? ', pre-release' : '') + ')' : null;
+    const casa = 'Casa: ' + ((x.casam || []).length ? x.casam.join(', ') : 'nenhum') + (x.conferido ? ' · conferido ' + ha(s.agora - x.conferido) : '');
+    const [acao, cmd] = acaoRecomp(x);
+    const linhas = [rotulo + (x.detalhe ? ' · ' + x.detalhe : ''), [ref, ult].filter(Boolean).join(' · '), casa, acao ? 'Ação: ' + acao : null].filter(Boolean);
+    return `<div class="srv"><div style="min-width:0"><div class="linha"><span class="dot ${c}"></span>${esc(x.nome || x.id)} <span class="versao">${x.canal === 'teste' ? 'teste' : 'liberado'}</span></div>
+      ${linhas.map(l => `<div class="det">${esc(l)}</div>`).join('')}</div>
+      ${cmd ? `<button class="btn" data-cmd="${esc(cmd)}"><svg><use href="#i-copy"/></svg>Copiar comando</button>` : '<div></div>'}</div>`;
+  }).join('') : '<div class="vazio">Nenhum Recomp no catálogo.</div>')
+    + ((r.avisos || []).length ? `<div class="dica" style="padding:0 20px 16px">Aviso: ${esc(r.avisos.join(' · '))}</div>` : '');
+}
+
+$('#rcLista').onclick = async e => {
+  const b = e.target.closest('button[data-cmd]');
+  if (!b) return;
+  if (await copiar(b.dataset.cmd)) toast('Comando copiado'); else toast('Não deu para copiar; o comando é: ' + b.dataset.cmd, true);
+};
+
+$('#srvLista').onclick = async e => {
+  const b = e.target.closest('button[data-srv]');
+  if (!b) return;
+  if (!await confirmar('Reiniciar ' + b.dataset.titulo + '?', 'Quem estiver jogando nesse servidor cai e precisa entrar de novo.', 'Reiniciar')) return;
+  b.disabled = true;
+  try { desenharServidores(await api('/api/servidores/reiniciar', { nome: b.dataset.srv })); toast('Pedido enviado; volta em alguns segundos'); }
+  catch (err) { toast(err.message, true); b.disabled = false; }
+};
+
+// ---------- downloads dos amigos ----------
+const ESTADOS = { baixando: 'Baixando', reconectando: 'Reconectando', fila: 'Na fila', verificando: 'Conferindo', instalando: 'Instalando', ok: 'Concluído', erro: 'Erro', cancelado: 'Cancelado' };
+
+function desenharDownloads(d) {
+  const at = d.ativos || [];
+  contador($('#contDownloads'), at.filter(x => !x.parado).length, 'ativo');
+  $('#dlInfo').textContent = at.length ? at.length + (at.length === 1 ? ' em andamento' : ' em andamento') : '';
+  $('#dlLista').innerHTML = at.length ? at.map(x => {
+    const pct = x.total ? Math.min(100, Math.floor(x.baixado * 100 / x.total)) : 0;
+    // Sem notícia (PC desligado, internet caiu, download cancelado por versão antiga): texto parado, sem velocidade.
+    const vel = !x.parado && x.estado === 'baixando' && x.velocidade ? ' · ' + gb(x.velocidade) + '/s' : '';
+    const est = x.parado ? 'Sem notícia ' + ha(d.agora - x.atualizado) : ESTADOS[x.estado] || x.estado;
+    const det = [x.amigo, x.console ? x.console.toUpperCase() : (x.tipo === 'pc' ? 'PC' : ''), est + (x.total ? ' · ' + pct + '% de ' + gb(x.total) : '') + vel, x.msg].filter(Boolean).join(' · ');
+    return `<div class="dl${x.parado ? ' parado-d' : ''}"><div class="avatar">${esc(x.amigo[0].toUpperCase())}</div>
+      <div style="min-width:0"><div class="nome">${esc(x.jogo)}</div><div class="det">${esc(det)}</div><div class="barra"><div style="width:${pct}%"></div></div></div><div></div></div>`;
+  }).join('') : '<div class="vazio">Ninguém baixando agora.</div>';
+  const h = d.historico || [];
+  $('#dlHist').innerHTML = h.length ? h.slice(0, 15).map(x =>
+    `<tr><td><span class="${x.estado === 'ok' ? 'ok-t' : x.estado === 'cancelado' ? 'cancel-t' : 'erro-t'}">${x.estado === 'ok' ? '✓' : x.estado === 'cancelado' ? '–' : '✕'}</span> <b>${esc(x.amigo)}</b> · ${esc(x.jogo)}${x.estado === 'erro' && x.msg ? ' · ' + esc(x.msg) : ''}${x.estado === 'cancelado' ? ' · Cancelado' : ''}</td><td>${ha(d.agora - x.fim)}</td></tr>`).join('')
+    : '<tr><td class="vazio" colspan="2">Nenhum ainda.</td></tr>';
+}
+
+async function carregarDownloads() {
+  try { desenharDownloads(await api('/api/downloads')); }
+  catch (e) { $('#dlLista').innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
+}
+
+// ---------- atualizacoes do programa dos amigos ----------
+function desenharAtualizacoes(a) {
+  const pub = a.publicada, amigos = a.amigos || [];
+  const atualizados = amigos.filter(x => x.versao && x.versao >= pub).length;
+  const velhos = amigos.filter(x => x.versao && pub && x.versao < pub).length;
+  contador($('#contAtualizacoes'), velhos, 'aviso');
+  $('#atInfo').textContent = pub ? 'Versão publicada: ' + pub + ' · ' + atualizados + ' de ' + amigos.length + ' atualizados' : '';
+  $('#atLista').innerHTML = amigos.length ? amigos.map(x => {
+    let cls = '', ver = '—', txt;
+    if (x.versao && x.versao >= pub) { cls = 'on'; ver = 'v' + x.versao; txt = 'Atualizado ' + ha(a.agora - x.atualizou); }
+    else if (x.versao) { cls = 'wait'; ver = 'v' + x.versao; txt = 'Ainda não pegou a ' + pub + (x.verificou ? ' · abriu o programa ' + ha(a.agora - x.verificou) : ''); }
+    else if (x.verificou) { cls = 'wait'; txt = 'Versão desconhecida · abriu o programa ' + ha(a.agora - x.verificou); }
+    else txt = 'Ainda não instalou';
+    const vcls = cls === 'on' ? 'ok' : x.versao ? 'velha' : '';
+    return `<div class="row"><div class="avatar">${esc(x.nome[0].toUpperCase())}</div>
+      <div style="min-width:0"><div class="nome">${esc(x.nome)}</div><div class="pcs">${esc(REDES[x.rede] || 'Sem rede')}</div></div>
+      <span class="versao ${vcls}">${ver}</span>
+      <div class="status"><span class="dot ${cls}"></span>${esc(txt)}</div></div>`;
+  }).join('') : '<div class="vazio">Nenhum amigo ainda.</div>';
+}
+
+async function carregarAtualizacoes() {
+  try { desenharAtualizacoes(await api('/api/atualizacoes')); }
+  catch (e) { $('#atInfo').textContent = ''; $('#atLista').innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
+}
+
+// ---------- erros do programa dos amigos ----------
+const ETAPAS = { atualizacao: 'Atualização', multiplayer: 'Multiplayer', gpsp: 'gpSP (Pokémon GBA)', correcoes: 'Correções por jogo' };
+
+function desenharErros(d) {
+  const er = d.erros || [];
+  contador($('#contErros'), er.length, 'alerta');
+  $('#btnLimparErros').classList.toggle('hidden', !er.length);
+  $('#erLista').innerHTML = er.length ? er.map(x => {
+    const det = [x.amigo, x.vezes > 1 ? x.vezes + ' vezes · última ' + ha(d.agora - x.ultima) : ha(d.agora - x.ultima), x.versao ? 'v' + x.versao : null].filter(Boolean).join(' · ');
+    return `<div class="srv"><div style="min-width:0"><div class="linha"><span class="dot off"></span>${esc(ETAPAS[x.etapa] || x.etapa)}: ${esc(x.msg || 'sem mensagem')}</div><div class="det">${esc(det)}</div></div>
+      <button class="btn" data-erro="${esc(x.id)}">Resolvido</button></div>`;
+  }).join('') : '<div class="vazio">Nenhum erro.</div>';
+}
+
+async function carregarErros() {
+  try { desenharErros(await api('/api/erros')); }
+  catch (e) { $('#erLista').innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
+}
+
+$('#erLista').onclick = async e => {
+  const b = e.target.closest('button[data-erro]');
+  if (!b) return;
+  b.disabled = true;
+  try { desenharErros(await api('/api/erros/resolver', { id: b.dataset.erro })); }
+  catch (err) { toast(err.message, true); b.disabled = false; }
+};
+
+$('#btnLimparErros').onclick = async () => {
+  if (!await confirmar('Limpar todos os erros?', 'Some da lista; se a falha acontecer de novo, ela volta.', 'Limpar')) return;
+  try { desenharErros(await api('/api/erros/resolver', {})); }
+  catch (err) { toast(err.message, true); }
+};
+
+// Servidores, downloads, atualizacoes e erros mudam sozinhos: atualiza enquanto a pagina esta aberta.
+setInterval(() => { if (!document.hidden && !$('#telaPainel').classList.contains('hidden')) { carregarServidores(); carregarDownloads(); carregarAtualizacoes(); carregarErros(); } }, 5000);
+
+function mensagem(c) {
+  return [
+    'Oi ' + c.nome + '! Pra jogar no meu servidor de jogos:', '',
+    '1. Baixe o arquivo "' + c.instalador + '" que vou te mandar.',
+    '2. Antes de abrir: clique com o botão direito nele > Propriedades > marque "Desbloquear" lá embaixo > OK.',
+    '   (Se esquecer, o Windows avisa: clique em "Mais informações" e depois em "Executar assim mesmo".)',
+    '3. Abra e, quando ele pedir, cole este código:', '', c.codigo, '',
+    c.rede === 'netbird' ? 'O código é só seu e vale por 7 dias.' : 'O código é só seu. Deixe o Tailscale ligado.'
+  ].join('\n');
+}
+
+function mostrarConvite(c) {
+  ultimo = c;
+  $('#conviteTitulo').textContent = 'Convite de ' + c.nome;
+  $('#conviteInfo').textContent = (c.rede === 'netbird' ? 'Vale 7 dias e uma instalação.' : 'Pelo Tailscale.') + ' Mande junto o ' + c.instalador + '.';
+  $('#conviteCodigo').textContent = c.codigo;
+  $('#btnWhats').href = 'https://wa.me/?text=' + encodeURIComponent(mensagem(c));
+  const tem = instaladores.includes(c.instalador);
+  $('#btnBaixar').classList.toggle('hidden', !tem);
+  if (tem) { $('#btnBaixar').href = '/instaladores/' + encodeURIComponent(c.instalador); $('#btnBaixar').setAttribute('download', c.instalador); }
+  $('#painelConvite').classList.remove('hidden');
+  $('#painelConvite').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function gerar(nome, r, botao) {
+  const antes = botao.textContent; botao.disabled = true; botao.textContent = 'Gerando…';
+  try {
+    const c = await api('/api/convite', { nome, rede: r });
+    mostrarConvite(c);
+    toast(c.loginNovo ? 'Convite criado para ' + c.nome : 'Código novo para ' + c.nome);
+    carregar();
+    return true;
+  } catch (e) { toast(e.message, true); return false; }
+  finally { botao.disabled = false; botao.textContent = antes; }
+}
+
+function confirmar(titulo, texto, rotulo = 'Revogar') {
+  const d = $('#dlg');
+  $('#dlgTitulo').textContent = titulo; $('#dlgTexto').textContent = texto; $('#dlgSim').textContent = rotulo;
+  return new Promise(ok => {
+    const fim = v => { d.close(); $('#dlgSim').onclick = $('#dlgNao').onclick = null; ok(v); };
+    $('#dlgSim').onclick = () => fim(true); $('#dlgNao').onclick = () => fim(false);
+    d.onclose = () => ok(false);
+    d.showModal();
+  });
+}
+
+// ---------- abas ----------
+const ABAS = ['amigos', 'servidores', 'downloads', 'atualizacoes', 'erros', 'recomps', 'jogos'];
+
+function mostrarAba(nome) {
+  if (!ABAS.includes(nome)) nome = 'amigos';
+  document.querySelectorAll('.abas button').forEach(b => b.setAttribute('aria-selected', b.dataset.aba === nome));
+  document.querySelectorAll('[data-painel]').forEach(p => p.classList.toggle('hidden', p.dataset.painel !== nome));
+  if (location.hash !== '#' + nome) history.replaceState(null, '', '#' + nome);
+  try { localStorage.setItem('aba', nome); } catch {}
+}
+
+document.querySelectorAll('.abas button').forEach(b => b.onclick = () => mostrarAba(b.dataset.aba));
+window.addEventListener('hashchange', () => mostrarAba(location.hash.slice(1)));
+
+function abaInicial() {
+  if (ABAS.includes(location.hash.slice(1))) return location.hash.slice(1);
+  try { return localStorage.getItem('aba') || 'amigos'; } catch { return 'amigos'; }
+}
+
+function mostrarEntrar() { $('#telaPainel').classList.add('hidden'); $('#telaEntrar').classList.remove('hidden'); $('#senha').focus(); }
+function mostrarPainel() { $('#telaEntrar').classList.add('hidden'); $('#telaPainel').classList.remove('hidden'); mostrarAba(abaInicial()); carregar(); carregarJogos(); carregarServidores(); carregarDownloads(); carregarAtualizacoes(); carregarErros(); }
+
+$('#formEntrar').onsubmit = async e => {
+  e.preventDefault(); $('#erroEntrar').textContent = '';
+  try { await api('/api/entrar', { senha: $('#senha').value }); $('#senha').value = ''; mostrarPainel(); }
+  catch (err) { $('#erroEntrar').textContent = err.message; $('#senha').select(); }
+};
+
+document.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
+  rede = b.dataset.rede;
+  document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  $('#dicaRede').textContent = rede === 'netbird' ? 'Para gente nova. O código vale 7 dias e uma instalação.'
+    : 'Só para quem já está no seu Tailscale. Não gera chave do NetBird.';
+});
+
+$('#formConvidar').onsubmit = async e => {
+  e.preventDefault();
+  if (await gerar($('#novoNome').value.trim(), rede, $('#btnConvidar'))) $('#novoNome').value = '';
+};
+
+$('#lista').onclick = async e => {
+  const b = e.target.closest('button[data-acao]');
+  if (b) {
+    e.stopPropagation();
+    const nome = b.dataset.nome, a = amigosAtuais.find(x => x.nome === nome);
+    if (b.dataset.acao === 'codigo') return gerar(nome, a.rede === 'tailscale' ? 'tailscale' : 'netbird', b);
+    if (await confirmar('Revogar ' + nome + '?', 'Apaga o login, tira os PCs dele do NetBird e cancela convites pendentes. Os jogos que ele já baixou continuam no PC dele.')) {
+      b.disabled = true;
+      try { await api('/api/revogar', { nome }); toast(nome + ' não tem mais acesso'); aberto = null; if (ultimo && ultimo.nome === nome) $('#painelConvite').classList.add('hidden'); carregar(); }
+      catch (err) { toast(err.message, true); b.disabled = false; }
+    }
+    return;
+  }
+  const row = e.target.closest('.row[data-nome]');
+  if (row) { aberto = aberto === row.dataset.nome ? null : row.dataset.nome; desenhar(amigosAtuais); }
+};
+$('#lista').onkeydown = e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.row')) { e.preventDefault(); e.target.click(); } };
+
+$('#btnCopiarMsg').onclick = async () => toast(await copiar(mensagem(ultimo)) ? 'Mensagem copiada' : 'Não deu para copiar', false);
+$('#btnCopiarCodigo').onclick = async () => toast(await copiar(ultimo.codigo) ? 'Código copiado' : 'Não deu para copiar', false);
+$('#btnFecharConvite').onclick = () => $('#painelConvite').classList.add('hidden');
+$('#btnAtualizar').onclick = () => { carregar(); carregarJogos(); carregarServidores(); carregarDownloads(); carregarAtualizacoes(); carregarErros(); };
+$('#btnSair').onclick = async () => { await api('/api/sair', {}).catch(() => {}); mostrarEntrar(); };
+
+fetch('/api/sessao').then(r => r.ok ? mostrarPainel() : mostrarEntrar(), mostrarEntrar);
+</script>
+</body>
+</html>

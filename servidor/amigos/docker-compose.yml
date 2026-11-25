@@ -1,0 +1,41 @@
+name: amigos
+services:
+  amigos:
+    image: python:3.12-alpine
+    container_name: amigos
+    restart: unless-stopped
+    user: "999:1000"
+    working_dir: /app
+    command: ["python", "-u", "/app/painel.py"]
+    environment:
+      - PORTA=8094
+      - HTPASSWD=/htpasswd
+      - JOGOS_URL=http://192.168.0.10:8095
+      - DONO=seu-login
+    ports:
+      - "8094:8094"
+    volumes:
+      - /DATA/AppData/amigos:/app
+      - /DATA/AppData/jogos-pc/logins.htpasswd:/htpasswd
+      # Botao "Verificar agora" e andamento do catalogo (gerar-catalogo.py).
+      - /DATA/AppData/jogos-pc/painel:/jogos-pc
+x-casaos:
+  architectures:
+    - amd64
+  author: Neto
+  category: Utilities
+  description:
+    en_US: Convites e acesso dos amigos ao servidor de jogos.
+  developer: Neto
+  icon: http://192.168.0.10:8094/icone.svg
+  id: local.neto.amigos
+  index: /
+  main: amigos
+  port_map: "8094"
+  scheme: http
+  store_app_id: amigos
+  tagline:
+    en_US: Amigos
+  thumbnail: ""
+  title:
+    en_US: Amigos

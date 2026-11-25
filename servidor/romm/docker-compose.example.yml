@@ -1,0 +1,45 @@
+# Exemplo de RomM (https://github.com/rommapp/romm). No ZimaOS eu instalei pela loja
+# (BigBear), que gera um arquivo parecido. Troque TODAS as senhas e a chave.
+# A pasta de ROMs precisa ter uma subpasta por console (psx, ps2, psp, gba...).
+name: romm
+services:
+  romm:
+    image: rommapp/romm:latest
+    container_name: romm
+    restart: unless-stopped
+    environment:
+      - DB_HOST=romm-db
+      - DB_NAME=romm
+      - DB_USER=romm
+      - DB_PASSWD=TROQUE-SENHA-DO-BANCO
+      - ROMM_AUTH_SECRET_KEY=GERE-COM-openssl-rand-hex-32
+      # Opcional: capas e informacoes dos jogos
+      # - IGDB_CLIENT_ID=
+      # - IGDB_CLIENT_SECRET=
+      # - RETROACHIEVEMENTS_API_KEY=
+    volumes:
+      - romm_resources:/romm/resources
+      - romm_redis:/redis-data
+      - /media/HD/Game/Roms:/romm/library/roms   # mapeie direto a pasta das ROMs
+      - ./assets:/romm/assets
+      - ./config:/romm/config
+    ports:
+      - "1080:8080"
+    depends_on:
+      - romm-db
+  romm-db:
+    image: mariadb:11
+    container_name: romm-db
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=TROQUE-SENHA-ROOT
+      - MARIADB_DATABASE=romm
+      - MARIADB_USER=romm
+      - MARIADB_PASSWORD=TROQUE-SENHA-DO-BANCO
+    volumes:
+      - romm_db:/var/lib/mysql
+    # Sem "ports": o banco nao precisa ficar aberto na rede.
+volumes:
+  romm_resources:
+  romm_redis:
+  romm_db:

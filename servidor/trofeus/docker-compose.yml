@@ -1,0 +1,32 @@
+name: trofeus
+services:
+  trofeus:
+    image: python:3.12-alpine
+    container_name: trofeus
+    restart: unless-stopped
+    working_dir: /app
+    command: ["python", "-u", "/app/servidor.py"]
+    ports:
+      - "8090:8090"
+    volumes:
+      - /DATA/AppData/trofeus:/app
+x-casaos:
+  architectures:
+    - amd64
+  author: Neto
+  category: Games
+  description:
+    en_US: Site de conquistas do RetroAchievements.
+  developer: Neto
+  icon: https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f3c6.png
+  id: local.neto.trofeus
+  index: /
+  main: trofeus
+  port_map: "8090"
+  scheme: http
+  store_app_id: trofeus
+  tagline:
+    en_US: Trofeus
+  thumbnail: ""
+  title:
+    en_US: Trofeus

@@ -1,0 +1,17 @@
+{
+  "dono": "SeuNome",
+  "servidor": {
+    "lan": "http://192.168.0.10:1080",
+    "netbird": "http://100.64.0.10:1080",
+    "tailscale": "https://meu-servidor.tailnet-exemplo.ts.net"
+  },
+  "romm": {
+    "usuario": "amigo",
+    "senha": "TROQUE-ESTA-SENHA"
+  },
+  "jogos": {
+    "lan": "http://192.168.0.10:8095",
+    "netbird": "http://100.64.0.10:8095",
+    "tailscale": "https://meu-servidor.tailnet-exemplo.ts.net:8444"
+  }
+}

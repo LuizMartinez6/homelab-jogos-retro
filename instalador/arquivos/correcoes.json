@@ -1,0 +1,15 @@
+[
+  {
+    "id": "ff-resonance-nvdec",
+    "jogo": "Final Fantasy Resonance",
+    "emulador": "Eden",
+    "titleId": "0100606026F12000",
+    "motivo": "Tela preta com audio depois do video de abertura (o NVDEC na GPU derruba o jogo).",
+    "valores": {
+      "Renderer": {
+        "nvdec_emulation": "1",
+        "use_asynchronous_gpu_emulation": "false"
+      }
+    }
+  }
+]

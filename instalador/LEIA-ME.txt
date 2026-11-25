@@ -1,0 +1,78 @@
+JOGOS RETRO E JOGOS DE PC - COMO INSTALAR
+=========================================
+
+1. Clique duas vezes em "Instalar.bat".
+   (Se o Windows mostrar "O Windows protegeu o computador", clique em
+   "Mais informacoes" e depois em "Executar assim mesmo".)
+
+2. Cole o codigo de convite que o dono do servidor te mandou (comeca com JR1-).
+   Cada codigo e de uma pessoa so e vale por 7 dias. Fora da casa do
+   servidor, o instalador instala o NetBird e conecta sozinho. Se o
+   Windows perguntar se pode fazer alteracoes, clique em Sim.
+
+3. Marque os consoles que voce quer e clique em Instalar.
+   Saturn, Dreamcast, 3DS, Switch e PS3 vem desmarcados: alguns pedem
+   arquivos extras ou um PC mais forte.
+
+4. Espere terminar (uns 10 a 20 minutos, depende da internet).
+
+PARA JOGAR
+- Use o atalho "Jogos Retro" na Area de Trabalho.
+- Escolha um jogo > Instalar > Jogar. Baixe um jogo por vez.
+- A barra no topo mostra o andamento e, clicando nela, abre a janela de
+  Downloads, com pausar e fila. Se a internet cair, ele continua sozinho.
+- Fora da casa do servidor, o NetBird precisa estar ligado (ele liga
+  sozinho com o Windows).
+- Depois de abrir o Playnite, espere uns segundos antes de clicar em
+  Instalar (senao aparece "implementacao da instalacao indisponivel").
+
+JOGOS DE PC
+- Eles aparecem no Playnite junto com os outros, em "Jogos de PC".
+- Clique em Instalar: ele baixa, instala e apaga o instalador sozinho.
+- Se o Windows pedir permissao, clique em Sim.
+- A barra no topo do Playnite mostra o andamento. Se a internet cair, ele
+  continua sozinho. Se o PC desligar, abra o Playnite e clique no aviso
+  "Clique aqui para continuar".
+- Durante a instalacao, o jogo usa quase o dobro do espaco final.
+
+ATUALIZACOES
+- O programa se atualiza sozinho quando voce abre o atalho "Jogos Retro".
+
+JOGOS RETRO GRANDES (PS2, PS3) OU INTERNET QUE CAI
+- Use "Baixar Jogo.bat": escolha o jogo e clique em Baixar. Se a
+  internet cair ou travar, ele continua de onde parou em vez de perder
+  tudo. Pode ate fechar e abrir de novo depois: ele continua.
+- Quando terminar, feche o Playnite se estiver aberto; o jogo aparece
+  instalado na proxima vez que voce abrir pelo atalho Jogos Retro.
+
+CONQUISTAS (comparar com a turma)
+- Abra no navegador (fora de casa, com o NetBird ligado):
+  http://100.64.0.10:8090
+- Para aparecer la: crie uma conta gratis em retroachievements.org
+  (confirme o e-mail que eles mandam) e passe seu usuario para o dono do servidor.
+- Para os emuladores contarem suas conquistas: feche os emuladores,
+  clique duas vezes em "Conectar Conquistas.bat" e entre UMA vez com
+  sua conta. Vale para PSP, PS1, PS2, DS, Game Boy e GameCube.
+
+JOGAR ONLINE COM A TURMA
+- Ja vem configurado: o atalho "Jogos Retro" liga cada emulador ao
+  servidor e usa o seu login como apelido. Nao precisa mexer em nada.
+- PSP: entre no modo multiplayer do proprio jogo (Ad Hoc / Local).
+- Switch (Eden) e 3DS (Azahar): abra o emulador > Multiplayer >
+  Conexao direta > Conectar (o endereco ja vem preenchido). Depois
+  abra o jogo e use o modo local/sem fio dele.
+- PS3: na primeira vez, no RPCS3 va em Configuracao > RPCN > Criar
+  conta e escolha um usuario e senha so seus.
+- Super Nintendo, N64, Mega Drive, PS1 (RetroArch): quem hospeda abre o
+  jogo, aperta F1 > Netplay > Hospedar. Os outros abrem o MESMO jogo e
+  vao em F1 > Netplay > Atualizar lista de salas e escolhem a sala.
+- Pokemon de GBA (FireRed, LeafGreen, Emerald, Ruby, Sapphire): ja abrem
+  no modo certo. Cada um abre o SEU jogo; um faz F1 > Netplay > Hospedar
+  e o outro F1 > Netplay > Atualizar lista de salas. Depois vao juntos
+  ao Centro Pokemon para trocar ou batalhar.
+- DS: so os jogos que tinham Wi-Fi da Nintendo (Mario Kart DS, Pokemon
+  Diamond/Pearl/Platinum/HeartGold/SoulSilver/Black/White...). No jogo,
+  entre no modo Wi-Fi / Nintendo WFC e troquem os codigos de amigo.
+  Jogos de DS que so tem modo local sem fio nao funcionam pela internet.
+
+Duvidas? Chame o dono do servidor.

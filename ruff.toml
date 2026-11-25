@@ -1,0 +1,17 @@
+# Lint do Python (servidor/ e testes/). Uso: python -m ruff check .
+line-length = 150
+target-version = "py312"  # imagem python:3.12-alpine dos containers
+
+[lint]
+# S = regras de seguranca (as do Bandit).
+select = ["E", "F", "W", "B", "UP", "C4", "S"]
+ignore = [
+    "UP031",  # o codigo usa % de proposito, igual em todos os arquivos
+    "E741",   # "l" para linha e o padrao do painel
+    "S104",   # os servidores rodam em container e precisam escutar em 0.0.0.0
+    "S310",   # urlopen so recebe endereco da config do dono (http/https), nunca do usuario
+]
+
+[lint.per-file-ignores]
+# Testes usam assert, senhas falsas, /tmp e subprocess de proposito.
+"testes/**" = ["S"]

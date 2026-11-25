@@ -1,0 +1,43 @@
+name: jogos-pc
+services:
+  jogos-pc:
+    image: nginx:1.28-alpine
+    container_name: jogos-pc
+    restart: unless-stopped
+    ports:
+      - "8095:8095"
+    volumes:
+      - /DATA/AppData/jogos-pc/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /DATA/AppData/jogos-pc/logins.htpasswd:/etc/nginx/logins.htpasswd:ro
+      - /DATA/AppData/jogos-pc/instalador:/srv/instalador:ro
+      - /media/HD/Game:/srv/jogos:ro
+  catalogo:
+    image: python:3.12-alpine
+    container_name: jogos-pc-catalogo
+    restart: unless-stopped
+    user: "999:1000"
+    working_dir: /app
+    command: ["python", "-u", "/app/gerar-catalogo.py", "--servico"]
+    volumes:
+      - /DATA/AppData/jogos-pc:/app
+      - /media/HD/Game:/media/HD/Game:ro
+x-casaos:
+  architectures:
+    - amd64
+  author: Neto
+  category: Utilities
+  description:
+    en_US: Servidor de jogos de PC e atualizacoes do instalador.
+  developer: Neto
+  icon: https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f3ae.png
+  id: local.neto.jogos-pc
+  index: /
+  main: jogos-pc
+  port_map: "8095"
+  scheme: http
+  store_app_id: jogos-pc
+  tagline:
+    en_US: Jogos PC
+  thumbnail: ""
+  title:
+    en_US: Jogos PC

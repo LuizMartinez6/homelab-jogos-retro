@@ -1,0 +1,38 @@
+# ---- Segredos: NUNCA versionar ----
+config.json
+!config.example.json
+atualizacao-privada.xml
+*.htpasswd
+logins.txt
+amigos.json
+painel.json
+netbird-token.txt
+senha-painel.txt
+*.pem
+*.key
+id_*
+.env
+
+# ---- Gerados / binarios ----
+saida/
+*.zip
+*.exe
+*.dll
+*.ico
+versao-publicada.txt
+hashes.json
+catalogo.json
+dados.json
+servidor/trofeus/site/img/
+__pycache__/
+
+# ---- Nada de jogos, BIOS, firmware ou chaves de console ----
+*.iso
+*.chd
+*.nsp
+*.xci
+*.bin
+*.cue
+prod.keys
+title.keys
+*.PUP

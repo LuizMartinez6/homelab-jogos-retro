@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jogos PC</title>
+<style>
+  body { margin: 0; padding: 24px 16px; background: #111316; color: #e8eaed; font: 16px system-ui, sans-serif; }
+  main { max-width: 760px; margin: auto; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  p { color: #9aa0a6; margin: 0 0 20px; }
+  li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #2a2d31; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  span { color: #9aa0a6; white-space: nowrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Jogos PC</h1>
+  <p id="resumo">Carregando...</p>
+  <ul id="lista"></ul>
+</main>
+<script>
+fetch('/instalador/catalogo.json', { cache: 'no-store' })
+  .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(function (c) {
+    var gb = function (b) { return (b / 1073741824).toFixed(1).replace('.', ',') + ' GB'; };
+    var total = c.jogos.reduce(function (s, j) { return s + j.tamanho; }, 0);
+    document.getElementById('resumo').textContent = 'Servidor no ar · ' + c.jogos.length + ' jogos · ' + gb(total);
+    c.jogos.forEach(function (j) {
+      var li = document.createElement('li');
+      var nome = document.createElement('div');
+      var tam = document.createElement('span');
+      nome.textContent = j.nome;
+      tam.textContent = gb(j.tamanho);
+      li.append(nome, tam);
+      document.getElementById('lista').append(li);
+    });
+  })
+  .catch(function () {
+    document.getElementById('resumo').textContent = 'Servidor no ar. Catálogo ainda não disponível.';
+  });
+</script>
+</body>
+</html>

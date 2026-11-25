@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Troféus da Turma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sala de troféus escura. Faixa de jogadores no topo, abas (Atividade / Jogos / Comparar) e listas de conquistas no estilo de vitrine. */
+:root {
+  --bg: #0e1117;
+  --painel: #161b24;
+  --painel-2: #1d2430;
+  --linha: #283142;
+  --texto: #e7eaf0;
+  --fraco: #8d97a9;
+  --ouro: #e2b04a;      /* hardcore / masterizado */
+  --ouro-fundo: #3a2e15;
+  --prata: #b9c3d2;     /* softcore */
+  --rara: #c58cf0;      /* conquistas raras */
+  --foco: #7fb6ff;
+  --f-titulo: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --f-texto: "Manrope", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--texto); font-family: var(--f-texto); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+.pagina { max-width: 1060px; margin: 0 auto; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--f-titulo); margin: 0; text-wrap: balance; letter-spacing: .01em; }
+button, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Cabecalho */
+.topo { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 24px; }
+.topo h1 { font-size: clamp(28px, 5vw, 40px); font-weight: 700; }
+.topo h1 span { color: var(--ouro); }
+.topo p { margin: 0; color: var(--fraco); font-size: 13px; }
+
+/* Jogadores */
+.jogadores { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.jogador { background: var(--painel); border: 1px solid var(--linha); border-radius: 10px; padding: 18px; display: grid; gap: 14px; }
+.jogador-cab { display: flex; gap: 14px; align-items: center; min-width: 0; }
+.avatar { width: 64px; height: 64px; border-radius: 8px; flex: none; background: var(--painel-2); border: 2px solid var(--ouro); object-fit: cover; }
+.jogador-cab > div { min-width: 0; }
+.jogador h2 { font-size: 22px; }
+.status { color: var(--fraco); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status b { color: var(--texto); font-weight: 600; }
+.placar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.placar div { background: var(--painel-2); border-radius: 6px; padding: 8px 10px; }
+.placar strong { display: block; font-family: var(--f-titulo); font-size: 22px; line-height: 1.1; }
+.placar span { font-size: 11px; color: var(--fraco); text-transform: uppercase; letter-spacing: .06em; }
+.placar .ouro strong { color: var(--ouro); }
+.convite { border-style: dashed; background: transparent; align-content: center; color: var(--fraco); font-size: 14px; }
+.convite h2 { color: var(--texto); font-size: 18px; }
+.convite ol { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+
+/* Abas */
+.abas { display: flex; gap: 4px; border-bottom: 1px solid var(--linha); overflow-x: auto; }
+.aba { background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 16px; cursor: pointer; color: var(--fraco);
+       font-family: var(--f-titulo); font-weight: 600; font-size: 15px; letter-spacing: .03em; white-space: nowrap; }
+.aba:hover { color: var(--texto); }
+.aba[aria-selected="true"] { color: var(--texto); border-bottom-color: var(--ouro); }
+.secao { display: grid; gap: 14px; }
+.secao h3 { font-size: 13px; color: var(--fraco); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+
+/* Icone de conquista; cinza quando ainda bloqueada */
+.badge { width: 48px; height: 48px; flex: none; border-radius: 6px; background-color: var(--painel-2); }
+.badge.bloq { filter: grayscale(1) brightness(.45); }
+.icone-jogo { width: 48px; height: 48px; flex: none; border-radius: 6px; object-fit: cover; background: var(--painel-2); }
+
+/* Atividade */
+.lista { display: grid; gap: 1px; background: var(--linha); border: 1px solid var(--linha); border-radius: 10px; overflow: hidden; }
+.item { display: flex; gap: 14px; align-items: center; background: var(--painel); padding: 12px 16px; min-width: 0; }
+.item > .meio { flex: 1; min-width: 0; }
+.item .t { font-weight: 600; }
+.item .d { color: var(--fraco); font-size: 13px; }
+.item .lado { text-align: right; font-size: 13px; color: var(--fraco); flex: none; }
+.pts { font-family: var(--f-titulo); font-weight: 600; color: var(--texto); }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em; padding: 1px 7px; border-radius: 99px; vertical-align: 1px; }
+.tag.hc { background: var(--ouro-fundo); color: var(--ouro); }
+.tag.sc { background: var(--painel-2); color: var(--prata); }
+.tag.rara { background: #2c1f3a; color: var(--rara); }
+.vazio { background: var(--painel); border: 1px dashed var(--linha); border-radius: 10px; padding: 20px; color: var(--fraco); }
+
+/* Jogos */
+.jogo { cursor: pointer; border: 0; width: 100%; text-align: left; }
+.jogo:hover { background: var(--painel-2); }
+.progresso { display: grid; gap: 6px; margin-top: 6px; }
+.barra-linha { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--fraco); }
+.barra-linha .quem { width: 84px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: none; }
+.barra { flex: 1; height: 6px; background: var(--painel-2); border-radius: 99px; overflow: hidden; min-width: 40px; }
+.barra i { display: block; height: 100%; background: var(--ouro); border-radius: 99px; }
+.barra-linha .val { width: 92px; text-align: right; flex: none; }
+.medalha { color: var(--ouro); font-family: var(--f-titulo); font-weight: 700; font-size: 12px; letter-spacing: .05em; }
+
+/* Comparar */
+.comp-topo { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
+.comp-topo select { background: var(--painel); border: 1px solid var(--linha); border-radius: 8px; padding: 9px 12px; max-width: 100%; }
+.filtros { display: flex; gap: 6px; flex-wrap: wrap; }
+.filtro { background: var(--painel); border: 1px solid var(--linha); border-radius: 99px; padding: 5px 12px; cursor: pointer; font-size: 13px; color: var(--fraco); }
+.filtro[aria-pressed="true"] { border-color: var(--ouro); color: var(--texto); }
+.jogo-cab { display: flex; gap: 16px; align-items: center; background: var(--painel); border: 1px solid var(--linha); border-radius: 10px; padding: 16px; }
+.jogo-cab img { width: 72px; height: 72px; border-radius: 8px; flex: none; }
+.jogo-cab h2 { font-size: 22px; }
+.jogo-cab p { margin: 2px 0 0; color: var(--fraco); font-size: 13px; }
+.conq .raro { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 12px; color: var(--fraco); }
+.conq .raro .barra { max-width: 160px; height: 4px; }
+.conq .raro .barra i { background: var(--prata); }
+.donos { display: flex; gap: 6px; flex: none; flex-wrap: wrap; justify-content: flex-end; max-width: 45%; }
+.dono { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 8px 3px 3px; border-radius: 99px; background: var(--painel-2); color: var(--fraco); }
+.dono img { width: 22px; height: 22px; border-radius: 99px; }
+.dono.tem { color: var(--texto); }
+.dono.tem.hc { box-shadow: inset 0 0 0 1px var(--ouro); }
+.dono:not(.tem) img { filter: grayscale(1); opacity: .5; }
+.rodape { color: var(--fraco); font-size: 12px; }
+.rodape a { color: var(--fraco); }
+
+@media (max-width: 560px) {
+  .item { flex-wrap: wrap; }
+  .item .lado { text-align: left; width: 100%; padding-left: 62px; }
+  .donos { max-width: none; width: 100%; justify-content: flex-start; padding-left: 62px; }
+  .barra-linha .quem { width: 64px; }
+}
+@media (prefers-reduced-motion: no-preference) { .barra i { transition: width .4s ease; } }
+</style>
+</head>
+<body>
+<div class="pagina">
+  <header class="topo">
+    <h1>Troféus <span>da Turma</span></h1>
+    <p id="atualizado">Carregando conquistas…</p>
+  </header>
+
+  <section class="jogadores" id="jogadores" aria-label="Jogadores"></section>
+
+  <nav class="abas" role="tablist" aria-label="Seções">
+    <button class="aba" role="tab" id="aba-atividade" data-aba="atividade" aria-selected="true">Atividade</button>
+    <button class="aba" role="tab" id="aba-jogos" data-aba="jogos" aria-selected="false">Jogos</button>
+    <button class="aba" role="tab" id="aba-comparar" data-aba="comparar" aria-selected="false">Comparar</button>
+  </nav>
+
+  <main>
+    <section class="secao" id="painel-atividade" role="tabpanel" aria-labelledby="aba-atividade"></section>
+    <section class="secao" id="painel-jogos" role="tabpanel" aria-labelledby="aba-jogos" hidden></section>
+    <section class="secao" id="painel-comparar" role="tabpanel" aria-labelledby="aba-comparar" hidden>
+      <div class="comp-topo">
+        <select id="escolha-jogo" aria-label="Jogo"></select>
+        <div class="filtros" id="filtros">
+          <button class="filtro" data-f="todas" aria-pressed="true">Todas</button>
+          <button class="filtro" data-f="ganhas" aria-pressed="false">Já desbloqueadas</button>
+          <button class="filtro" data-f="faltam" aria-pressed="false">Faltando</button>
+          <button class="filtro" data-f="raras" aria-pressed="false">Raras</button>
+        </div>
+      </div>
+      <div id="comp-conteudo" class="secao"></div>
+    </section>
+  </main>
+
+  <p class="rodape">Dados públicos do <a href="https://retroachievements.org" target="_blank" rel="noopener">RetroAchievements</a>. Dourado = conquista no modo hardcore; prata = modo normal. Raridade = quantos jogadores daquele jogo têm a conquista. A página se atualiza sozinha a cada 30 minutos.</p>
+</div>
+
+<script>
+const lista = x => Array.isArray(x) ? x : (x ? [x] : []);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// RetroAchievements manda "AAAA-MM-DD HH:MM:SS" em UTC; datas com fuso ja vem completas.
+const quando = s => s ? new Date(/[TZ+]/.test(s.slice(10)) ? s : s.replace(' ', 'T') + 'Z') : null;
+const dataCurta = s => { const d = quando(s); return d ? d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }) : ''; };
+function relativo(s) {
+  const d = quando(s); if (!d) return '';
+  const min = Math.round((Date.now() - d) / 60000);
+  if (min < 60) return `há ${Math.max(1, min)} min`;
+  const h = Math.round(min / 60); if (h < 24) return `há ${h} h`;
+  const dias = Math.round(h / 24); if (dias < 30) return `há ${dias} dia${dias > 1 ? 's' : ''}`;
+  return dataCurta(s);
+}
+const statusPt = s => (s || '').replace(/^Playing /, 'Jogando ');
+
+let D = null, jogoAtual = null, filtro = 'todas';
+
+function badge(jogo, c, tamanho = 48, bloqueada = false) {
+  return `<img class="badge${bloqueada ? ' bloq' : ''}" src="${esc(c.icone)}" alt="${esc(c.titulo)}" width="${tamanho}" height="${tamanho}" loading="lazy">`;
+}
+const raridade = (jogo, c) => jogo.jogadores ? (c.ganharam / jogo.jogadores) * 100 : 0;
+const tagRara = p => p < 2 ? '<span class="tag rara">Ultra rara</span>' : p < 10 ? '<span class="tag rara">Rara</span>' : '';
+
+function renderJogadores() {
+  const cards = D.usuarios.map(u => {
+    const jogos = lista(u.jogos), comConquista = jogos.filter(j => j.ganhas > 0).length;
+    const mestres = jogos.filter(j => j.premio === 'mastered' || j.premio === 'completed').length;
+    return `<article class="jogador">
+      <div class="jogador-cab">
+        <img class="avatar" src="${esc(u.foto)}" alt="">
+        <div><h2>${esc(u.nome)}</h2>
+          <div class="status">${u.status ? `<b>${esc(statusPt(u.status))}</b>` : 'Sem jogo no momento'}</div>
+          <div class="status">Na turma desde ${dataCurta(u.membroDesde)}</div></div>
+      </div>
+      <div class="placar">
+        <div class="ouro"><strong class="num">${u.pontos}</strong><span>Pontos</span></div>
+        <div><strong class="num">${Object.keys(u.ganhas || {}).length}</strong><span>Conquistas</span></div>
+        <div><strong class="num">${mestres}</strong><span>Zerados 100%</span></div>
+      </div>
+    </article>`;
+  });
+  cards.push(`<article class="jogador convite">
+    <h2>Chame a turma</h2>
+    <ol><li>Cada amigo cria uma conta grátis no RetroAchievements.</li>
+        <li>Entra com ela nos emuladores.</li>
+        <li>Te passa o nome de usuário para entrar aqui.</li></ol>
+  </article>`);
+  document.getElementById('jogadores').innerHTML = cards.join('');
+}
+
+function renderAtividade() {
+  const ev = D.usuarios.flatMap(u => lista(u.recentes).map(r => ({ ...r, u })))
+    .filter(r => D.jogos[r.jogo]).sort((a, b) => quando(b.data) - quando(a.data));
+  const linhas = ev.map(r => {
+    const jogo = D.jogos[r.jogo], c = lista(jogo.conquistas).find(x => x.id === r.conquista); if (!c) return '';
+    return `<div class="item">${badge(jogo, c)}
+      <div class="meio"><div class="t">${esc(r.u.nome)} desbloqueou ${esc(c.titulo)} ${r.hc ? '<span class="tag hc">HARDCORE</span>' : ''} ${tagRara(raridade(jogo, c))}</div>
+        <div class="d">${esc(c.descricao)}</div>
+        <div class="d">${esc(jogo.titulo)} · ${esc(jogo.console)}</div></div>
+      <div class="lado"><div class="pts num">+${c.pontos} pts</div>${relativo(r.data)}</div></div>`;
+  }).join('');
+  const jogando = D.usuarios.flatMap(u => lista(u.jogando).map(j => ({ ...j, u }))).sort((a, b) => quando(b.quando) - quando(a.quando));
+  document.getElementById('painel-atividade').innerHTML = `
+    <h3>Últimas conquistas</h3>
+    ${linhas ? `<div class="lista">${linhas}</div>` : '<div class="vazio">Nenhuma conquista ainda. A primeira que alguém desbloquear aparece aqui.</div>'}
+    <h3>Jogado recentemente</h3>
+    <div class="lista">${jogando.map(j => `<div class="item"><img class="icone-jogo" src="${esc(j.icone)}" alt="">
+      <div class="meio"><div class="t">${esc(j.titulo)}</div><div class="d">${esc(j.u.nome)} · ${esc(j.console)}</div></div>
+      <div class="lado">${relativo(j.quando)}</div></div>`).join('')}</div>`;
+}
+
+function progressoDe(u, id) { return lista(u.jogos).find(j => j.id === Number(id)); }
+
+function renderJogos() {
+  const ids = Object.keys(D.jogos).sort((a, b) => {
+    const ult = id => Math.max(...D.usuarios.map(u => { const p = progressoDe(u, id); const j = lista(u.jogando).find(x => x.jogo === Number(id));
+      return Math.max(p && p.ultima ? +quando(p.ultima) : 0, j ? +quando(j.quando) : 0); }));
+    return ult(b) - ult(a);
+  });
+  document.getElementById('painel-jogos').innerHTML = `<h3>${ids.length} jogos com conquistas</h3><div class="lista">${ids.map(id => {
+    const jogo = D.jogos[id], total = lista(jogo.conquistas).length;
+    const barras = D.usuarios.map(u => {
+      const p = progressoDe(u, id), n = p ? p.ganhas : 0, pct = total ? Math.round(n / total * 100) : 0;
+      const medalha = p && (p.premio === 'mastered' || p.premio === 'completed') ? ' <span class="medalha">100%</span>' : '';
+      return `<div class="barra-linha"><span class="quem">${esc(u.nome)}</span><span class="barra"><i style="width:${pct}%"></i></span><span class="val num">${n}/${total} · ${pct}%${medalha}</span></div>`;
+    }).join('');
+    return `<button class="item jogo" data-jogo="${id}"><img class="icone-jogo" src="${esc(jogo.icone)}" alt="">
+      <div class="meio"><div class="t">${esc(jogo.titulo)}</div><div class="d">${esc(jogo.console)} · ${total} conquistas</div><div class="progresso">${barras}</div></div></button>`;
+  }).join('')}</div>`;
+}
+
+function renderComparar() {
+  const jogo = D.jogos[jogoAtual]; if (!jogo) return;
+  const conqs = lista(jogo.conquistas);
+  const pontosTot = conqs.reduce((s, c) => s + c.pontos, 0);
+  const alguem = c => D.usuarios.some(u => u.ganhas && u.ganhas[c.id]);
+  const vis = conqs.filter(c => filtro === 'todas' || (filtro === 'ganhas' && alguem(c)) || (filtro === 'faltam' && !alguem(c)) || (filtro === 'raras' && raridade(jogo, c) < 10));
+  const linhas = vis.map(c => {
+    const p = raridade(jogo, c);
+    const donos = D.usuarios.map(u => { const g = u.ganhas && u.ganhas[c.id];
+      return `<span class="dono${g ? ' tem' : ''}${g && g.hc ? ' hc' : ''}" title="${g ? `${esc(u.nome)} em ${dataCurta(g.data)}` : `${esc(u.nome)} ainda não tem`}"><img src="${esc(u.foto)}" alt="">${g ? dataCurta(g.data) : 'bloqueada'}</span>`; }).join('');
+    return `<div class="item conq">${badge(jogo, c, 48, !alguem(c))}
+      <div class="meio"><div class="t">${esc(c.titulo)} <span class="pts num" style="font-size:13px;color:var(--fraco)">${c.pontos} pts</span> ${tagRara(p)}</div>
+        <div class="d">${esc(c.descricao)}</div>
+        <div class="raro"><span class="barra"><i style="width:${Math.min(100, p).toFixed(1)}%"></i></span><span class="num">${p.toFixed(1)}% dos jogadores</span></div></div>
+      <div class="donos">${donos}</div></div>`;
+  }).join('');
+  const resumo = D.usuarios.map(u => `${esc(u.nome)}: ${conqs.filter(c => u.ganhas && u.ganhas[c.id]).length}/${conqs.length}`).join(' · ');
+  document.getElementById('comp-conteudo').innerHTML = `
+    <div class="jogo-cab"><img src="${esc(jogo.icone)}" alt=""><div><h2>${esc(jogo.titulo)}</h2>
+      <p>${esc(jogo.console)} · ${conqs.length} conquistas · ${pontosTot} pontos · ${jogo.jogadores.toLocaleString('pt-BR')} jogadores no mundo</p><p>${resumo}</p></div></div>
+    ${linhas ? `<div class="lista">${linhas}</div>` : '<div class="vazio">Nenhuma conquista neste filtro.</div>'}`;
+}
+
+function abrirAba(nome) {
+  document.querySelectorAll('.aba').forEach(b => b.setAttribute('aria-selected', String(b.dataset.aba === nome)));
+  ['atividade', 'jogos', 'comparar'].forEach(id => document.getElementById('painel-' + id).hidden = id !== nome);
+  try { localStorage.setItem('trofeus-aba', nome); } catch (e) {}
+}
+document.querySelector('.abas').addEventListener('click', e => { const b = e.target.closest('.aba'); if (b) abrirAba(b.dataset.aba); });
+document.getElementById('painel-jogos').addEventListener('click', e => {
+  const b = e.target.closest('[data-jogo]'); if (!b) return;
+  jogoAtual = b.dataset.jogo; document.getElementById('escolha-jogo').value = jogoAtual; renderComparar(); abrirAba('comparar'); scrollTo({ top: 0 });
+});
+document.getElementById('escolha-jogo').addEventListener('change', e => { jogoAtual = e.target.value; renderComparar(); });
+document.getElementById('filtros').addEventListener('click', e => {
+  const b = e.target.closest('.filtro'); if (!b) return; filtro = b.dataset.f;
+  document.querySelectorAll('.filtro').forEach(x => x.setAttribute('aria-pressed', String(x === b))); renderComparar();
+});
+
+fetch('dados.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(dados => {
+  D = dados; D.usuarios = lista(D.usuarios);
+  document.getElementById('atualizado').textContent = 'Atualizado em ' + new Date(D.geradoEm).toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const ids = Object.keys(D.jogos).sort((a, b) => D.jogos[a].titulo.localeCompare(D.jogos[b].titulo));
+  document.getElementById('escolha-jogo').innerHTML = ids.map(id => `<option value="${id}">${esc(D.jogos[id].titulo)} (${esc(D.jogos[id].console)})</option>`).join('');
+  const ultimo = D.usuarios[0] && String(D.usuarios[0].ultimoJogo);
+  jogoAtual = D.jogos[ultimo] ? ultimo : ids[0]; document.getElementById('escolha-jogo').value = jogoAtual;
+  renderJogadores(); renderAtividade(); renderJogos(); renderComparar();
+  let aba = 'atividade'; try { aba = localStorage.getItem('trofeus-aba') || aba; } catch (e) {}
+  if (['atividade', 'jogos', 'comparar'].includes(location.hash.slice(1))) aba = location.hash.slice(1);
+  abrirAba(aba);
+}).catch(() => { document.getElementById('atualizado').textContent = 'Não consegui carregar as conquistas. Peça para atualizar a página.'; });
+</script>
+
+</body>
+</html>

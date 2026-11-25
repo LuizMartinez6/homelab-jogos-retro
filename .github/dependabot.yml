@@ -1,0 +1,25 @@
+# Dependabot: abre PR quando sai versao nova das Actions (presas por SHA) e das imagens
+# Docker dos servidores. O Python usa so a biblioteca padrao, entao nao ha pip aqui.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
+    cooldown:
+      default-days: 7  # espera a versao nova "assentar" (protege contra release maliciosa)
+
+  - package-ecosystem: docker-compose
+    directories:
+      - /servidor/amigos
+      - /servidor/jogos-pc
+      - /servidor/monitor
+      - /servidor/syncthing
+      - /servidor/trofeus
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
