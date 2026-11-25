@@ -12,7 +12,7 @@ services:
       - /DATA/AppData/jogos-pc/instalador:/srv/instalador:ro
       - /media/HD/Game:/srv/jogos:ro
   catalogo:
-    image: python:3.12-alpine
+    image: python:3.15-alpine
     container_name: jogos-pc-catalogo
     restart: unless-stopped
     user: "999:1000"
