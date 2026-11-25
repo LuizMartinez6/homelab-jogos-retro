@@ -1,16 +1,13 @@
-# Dependabot: abre PR quando sai versao nova das Actions (presas por SHA) e das imagens
-# Docker dos servidores. O Python usa so a biblioteca padrao, entao nao ha pip aqui.
+# Dependabot da vitrine: este repo e gerado a partir do repo de trabalho, onde as atualizacoes
+# entram e sao testadas. Aqui ficam so os alertas de seguranca; PR de versao, nenhum
+# (open-pull-requests-limit: 0).
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
-    groups:
-      actions:
-        patterns: ['*']
-    cooldown:
-      default-days: 7  # espera a versao nova "assentar" (protege contra release maliciosa)
+    open-pull-requests-limit: 0
 
   - package-ecosystem: docker-compose
     directories:
@@ -21,5 +18,4 @@ updates:
       - /servidor/trofeus
     schedule:
       interval: weekly
-    cooldown:
-      default-days: 7
+    open-pull-requests-limit: 0
